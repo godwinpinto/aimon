@@ -1,7 +1,7 @@
 
 export type TPolicyAction = {
     action: 'block_page' | 'block_paste' | 'disclaimer' | 'sticky' | 'none' | 'block_copy' | 'block_cut' | 'block_rightclick' | string
-    message: TPolicyMessage
+    message?: TPolicyMessage
 }
 
 export type TPolicySummary = {
@@ -12,31 +12,22 @@ export type TPolicySummary = {
 export type TPolicyMessage = {
     title?: string,
     description: string,
-    location: string,
-    alertType: 'danger' | 'warning' | 'info' | 'success' | 'none',
-    durationInSeconds: number
+    durationInSeconds?: number
 }
 
 const ALL_URLS_VAL:string='<all_urls>';
 
 export const policyValidator = (url: string, configurationMap: Map<string, Map<string, TPolicyMessage>>,
-    disclaimerAcceptanceStore: Map<string, Date>, stickyCancellationStore: Map<string, Date>, resourceGroupMap: Map<string, any>
+    stickyCancellationStore: Map<string, Date>, resourceGroupMap: Map<string, any>
 ): Array<TPolicyAction> => {
     let policyActions: Array<TPolicyAction> = [];
+
     for (const [key, value] of Object.entries(configurationMap) as Array<[string, Map<string, TPolicyMessage>]>) {
         const regex = new RegExp(key)
         if (regex.test(url) || key===ALL_URLS_VAL) {
             for (const [key, messageProps] of Object.entries(value)) {
                 let domain = (new URL(url));
 
-                if (key === 'disclaimer' && disclaimerAcceptanceStore.has(domain.hostname)) {
-                    const storeDate = disclaimerAcceptanceStore.get(domain.hostname);
-                    if (storeDate > new Date()) {
-                        continue;
-                    } else {
-                        disclaimerAcceptanceStore.delete(domain.hostname)
-                    }
-                }
                 if (key === 'sticky' && stickyCancellationStore.has(domain.hostname)) {
                     const storeDate = stickyCancellationStore.get(domain.hostname);
                     if (storeDate > new Date()) {
@@ -68,16 +59,21 @@ export const policyValidator = (url: string, configurationMap: Map<string, Map<s
                 }
 
                 let policyAction: TPolicyAction = {
-                    action: key,
-                    message: messageProps.message
+                    action: key
                 }
                 policyActions.push(policyAction);
             }
-/*             if(!configurationMap.has(ALL_URLS_VAL)){
-                break;
-            } */
         }
     }
+    if(policyActions.length!=0){
+        let policyAction: TPolicyAction = {
+            action: "sticky",
+            message: configurationMap['message']
+        }
+        policyActions.push(policyAction);
+    }
+
+
     return policyActions;
 }
 
@@ -111,6 +107,11 @@ export const policyParser = (rawData: JSON): TPolicySummary => {
                 }
             }
         }
+    }
+    if(rawData['message'] && rawData['message']['title']){
+        finalURLExportMap["message"] = new Map<string, TPolicyMessage>();
+        finalURLExportMap["message"]['action']=rawData['sticky'];
+        finalURLExportMap["message"]['message']=rawData['message'];
     }
     let resourceGroups: TPolicySummary = {
         policy: finalURLExportMap,

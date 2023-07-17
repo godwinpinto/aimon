@@ -7,12 +7,7 @@
 
     export let props: TPolicyMessage;
 
-    let position: string;
-    if (props.location === "top") {
-        position = "top";
-    } else {
-        position = "bottom";
-    }
+    let position = "bottom";
     const diclaimerClosed = (durationInSeconds) => {
         let askMessage = {
             category: "STORE_STICKY_CANCELLATION",

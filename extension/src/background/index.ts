@@ -6,14 +6,13 @@ import appConfig from "src/config/config";
 import type { TMessageExchange } from "src/components/types/MessageExchangeType";
 import type { TMessageCategory } from "src/components/types/MessageCategoryTypes";
 import moment, { type Moment } from 'moment';
+import { apiLogger } from "src/components/helpers/ApiLogger";
 
 let configuration = new Map<string, Map<string,TPolicyMessage>>();
 
 let resourceGroupMap = new Map<string, any>();
 
 let messageStore = new Map<number, Array<TPolicyAction>>();
-
-let disclaimerAcceptanaceStore = new Map<string, Date>();
 
 let stickyCancellationStore = new Map<string, Date>();
 
@@ -33,15 +32,9 @@ browser.tabs.onUpdated.addListener((tabId, changeInfo, tabInfo) => {
         return;
     }
 
-    let policyActions: Array<TPolicyAction> = policyValidator(url,configuration,disclaimerAcceptanaceStore,stickyCancellationStore,resourceGroupMap);
+    let policyActions: Array<TPolicyAction> = policyValidator(url,configuration,stickyCancellationStore,resourceGroupMap);
     if(policyActions.length!=0){
         messageStore.set(tabId, policyActions);
-        for(let policyAction of policyActions){
-            if(policyAction.action==='block_page'){
-                browser.tabs.update(tabId, { url: browser.runtime.getURL('src/blocked/blocked.html') });
-                break;
-            }
-        }
     }else{
         policyActions=[];
         messageStore.set(tabId, policyActions);
@@ -54,15 +47,12 @@ const processContentScriptsListener = ((request: any, sender, sendResponse): voi
         let category = request as TMessageCategory;
         if (category.category === 'REQUEST_MESSAGE') {
             sendResponse({ response: messageStore.get(sender.tab.id) });
-        }else if(category.category === 'STORE_DISCLAIMER_ACCEPTANCE') {
-            
-            const newTime=moment().add(category.data.duration,'seconds');
-            let domain = (new URL(sender.url));
-            disclaimerAcceptanaceStore.set(domain.hostname,newTime.toDate());
         }else if(category.category === 'STORE_STICKY_CANCELLATION') {
             const newTime=moment().add(category.data.duration,'seconds');
             let domain = (new URL(sender.url));
             stickyCancellationStore.set(domain.hostname,newTime.toDate());
+        }else if(category.category === 'LOG_EVENT') {
+             apiLogger(sender.url,category.data.event,category.data.content);
         }
     }
 });
