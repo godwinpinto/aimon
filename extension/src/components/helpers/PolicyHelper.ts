@@ -1,6 +1,6 @@
 
 export type TPolicyAction = {
-    action: 'block_page' | 'block_paste' | 'disclaimer' | 'sticky' | 'none' | 'block_copy' | 'block_cut' | 'block_rightclick' | string
+    action: 'log_paste' | 'log_cut_copy' | 'sticky' | 'none' | string
     message?: TPolicyMessage
 }
 
@@ -68,7 +68,7 @@ export const policyValidator = (url: string, configurationMap: Map<string, Map<s
     if(policyActions.length!=0){
         let policyAction: TPolicyAction = {
             action: "sticky",
-            message: configurationMap['message']
+            message: configurationMap['message']['sticky']['message']
         }
         policyActions.push(policyAction);
     }
@@ -110,8 +110,10 @@ export const policyParser = (rawData: JSON): TPolicySummary => {
     }
     if(rawData['message'] && rawData['message']['title']){
         finalURLExportMap["message"] = new Map<string, TPolicyMessage>();
-        finalURLExportMap["message"]['action']=rawData['sticky'];
-        finalURLExportMap["message"]['message']=rawData['message'];
+        finalURLExportMap["message"]['sticky']={
+            message:rawData['message'],
+            resources_exclude:[]
+        }
     }
     let resourceGroups: TPolicySummary = {
         policy: finalURLExportMap,
