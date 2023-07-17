@@ -1,0 +1,41 @@
+{
+    "resource_groups": [
+      {
+        "exclude_group": [
+          {
+            "url": "^https?:\\/\\/(www\\.)?google\\.com?(\\/.*)?$"
+          },
+          {
+            "url": "^https?:\\/\\/(www\\.)?gmail\\.com?(\\/.*)?$"
+          },
+          {
+            "url": "^https?:\\/\\/(www\\.)?bing\\.com?(\\/.*)?$"
+          }
+        ]
+      }
+    ],
+    "message":{
+      "title":"Policy Notice",
+      "message":"As per the company's data disclosure policy, we kindly remind you not to share company content or information on third-party websites. Please be aware that such actions are actively monitored and recorded. Any individual found in violation of this policy will face appropriate consequences. For more details regarding the policy, please refer to the [link](https://cdn.who.int/media/docs/default-source/about-us/infodisclosurepolicy.pdf?sfvrsn=c1520275_10)."
+    },
+    "conditions": [
+      {
+        "action": "log_paste",
+        "resources_include": [
+          "<all_urls>"
+        ],
+        "resources_exclude": [
+          "exclude_group"
+        ]
+      },
+        {
+        "action": "log_cut_copy",
+        "resources_include": [
+          "<all_urls>"
+        ],
+        "resources_exclude": [
+          "exclude_group"
+        ]
+      }
+      ]
+  }

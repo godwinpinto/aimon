@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root #alert div p{
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
