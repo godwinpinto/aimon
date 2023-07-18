@@ -1,5 +1,5 @@
 
 export type TMessageCategory={
-    category:'REQUEST_MESSAGE' | 'STORE_STICKY_CANCELLATION' | 'LOG_EVENT'
+    category:'REQUEST_RULES' | 'STORE_STICKY_CANCELLATION' | 'LOG_EVENT'
     data?:any
 }

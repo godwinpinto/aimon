@@ -33,7 +33,7 @@
             "128": "src/assets/icons/icon_128.png"
         }
     },
-    "permissions": ["storage","alarms"],
+    "permissions": ["storage","alarms","clipboardRead","clipboardWrite"],
     "host_permissions": [
         "<all_urls>"
       ]

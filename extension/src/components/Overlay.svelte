@@ -7,6 +7,10 @@
     import LogPasteEvents from "./popups/LogPasteEvents.svelte";
     import LogCutCopyEvents from "./popups/LogCutCopyEvents.svelte";
     import type { TAlertProps } from "./types/AlertPropsTypes";
+
+    // Some global styles on the page
+    import "../content/styles.css";
+
     const defaultMessage: TPolicyMessage = {
         title: "",
         description: "",
@@ -20,16 +24,20 @@
 
     let actors: Array<TPolicyAction> = [];
 
+    let isCopyTextEmitted:boolean =false;
+
+
     onMount(() => {
         function handleResponse(message) {
             if (!message.response) {
                 return;
             }
+            console.log(message.response);
             actors = message.response;
         }
 
         let askMessage: TMessageCategory = {
-            category: "REQUEST_MESSAGE",
+            category: "REQUEST_RULES",
         };
 
         function handleError(error) {
@@ -51,7 +59,7 @@
     {#if actor.action == "log_cut_copy"}
         <LogCutCopyEvents/>
     {/if}
-    {#if actor.action == "block_copy"}
+    {#if actor.action == "log_paste"}
         <LogPasteEvents/>
     {/if}
 {/each}

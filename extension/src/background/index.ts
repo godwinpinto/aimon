@@ -33,6 +33,7 @@ browser.tabs.onUpdated.addListener((tabId, changeInfo, tabInfo) => {
     }
 
     let policyActions: Array<TPolicyAction> = policyValidator(url,configuration,stickyCancellationStore,resourceGroupMap);
+    console.log("policyActions",policyActions);
     if(policyActions.length!=0){
         messageStore.set(tabId, policyActions);
     }else{
@@ -45,7 +46,7 @@ const processContentScriptsListener = ((request: any, sender, sendResponse): voi
 
     if ((request as TMessageCategory).category) {
         let category = request as TMessageCategory;
-        if (category.category === 'REQUEST_MESSAGE') {
+        if (category.category === 'REQUEST_RULES') {
             sendResponse({ response: messageStore.get(sender.tab.id) });
         }else if(category.category === 'STORE_STICKY_CANCELLATION') {
             const newTime=moment().add(category.data.duration,'seconds');

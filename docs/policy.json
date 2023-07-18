@@ -16,7 +16,8 @@
     ],
     "message":{
       "title":"Policy Notice",
-      "description":"As per the company's data disclosure policy, we kindly remind you not to share company content or information on third-party websites. Please be aware that such actions are actively monitored and recorded. Any individual found in violation of this policy will face appropriate consequences. For more details regarding the policy, please refer to the [link](https://cdn.who.int/media/docs/default-source/about-us/infodisclosurepolicy.pdf?sfvrsn=c1520275_10)."
+      "description":"As per the company's data disclosure policy, we kindly remind you not to share company content or information on third-party websites. Please be aware that such actions are actively monitored and recorded. Any individual found in violation of this policy will face appropriate consequences. For more details regarding the policy, please refer to the [link](https://cdn.who.int/media/docs/default-source/about-us/infodisclosurepolicy.pdf?sfvrsn=c1520275_10).",
+      "durationInSeconds":600
     },
     "conditions": [
       {

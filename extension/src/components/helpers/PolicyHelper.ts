@@ -6,7 +6,7 @@ export type TPolicyAction = {
 
 export type TPolicySummary = {
     resourceGroups: any,
-    policy: Map<string, Map<string, TPolicyMessage>>,
+    policy: Map<string, Map<string, any>>,
 }
 
 export type TPolicyMessage = {
@@ -20,6 +20,7 @@ const ALL_URLS_VAL:string='<all_urls>';
 export const policyValidator = (url: string, configurationMap: Map<string, Map<string, TPolicyMessage>>,
     stickyCancellationStore: Map<string, Date>, resourceGroupMap: Map<string, any>
 ): Array<TPolicyAction> => {
+    console.log("configurationMap",configurationMap);
     let policyActions: Array<TPolicyAction> = [];
 
     for (const [key, value] of Object.entries(configurationMap) as Array<[string, Map<string, TPolicyMessage>]>) {
@@ -84,13 +85,19 @@ export const policyParser = (rawData: JSON): TPolicySummary => {
             resourceGroupMap[key] = rawData['resource_groups'][resourceIndex][key];
         }
     }
-    let finalURLExportMap = new Map<string, Map<string, TPolicyMessage>>();
+    let finalURLExportMap = new Map<string, Map<string, any>>();
     for (let condition of rawData['conditions']) {
         for (let resourceGroup of condition['resources_include']) {
             if(resourceGroup===ALL_URLS_VAL){
-                finalURLExportMap[ALL_URLS_VAL] = new Map<string, TPolicyMessage>();
-                finalURLExportMap[ALL_URLS_VAL][condition["action"]] = condition["props"];
+                if(!finalURLExportMap[ALL_URLS_VAL]){
+                    finalURLExportMap[ALL_URLS_VAL] = new Map<string, any>();
+                }
+                if(!finalURLExportMap[ALL_URLS_VAL][condition["action"]]){
+                    finalURLExportMap[ALL_URLS_VAL][condition["action"]]={};
+                }
+//                finalURLExportMap[ALL_URLS_VAL][condition["action"]] = condition["props"];
                 if (condition['resources_exclude']) {
+                    console.log(condition['resources_exclude']);
                     finalURLExportMap[ALL_URLS_VAL][condition["action"]]['resources_exclude'] = condition['resources_exclude'];
                 }
                 continue;
@@ -99,21 +106,26 @@ export const policyParser = (rawData: JSON): TPolicySummary => {
             for (let urlObject of resourceGroupMap[resourceGroup]) {
                 let url = urlObject["url"];
                 if (!finalURLExportMap[url]) {
-                    finalURLExportMap[url] = new Map<string, TPolicyMessage>();
+                    finalURLExportMap[url] = new Map<string, any>();
+                    finalURLExportMap[url][condition["action"]]={};
                 }
-                finalURLExportMap[url][condition["action"]] = condition["props"];
+//                finalURLExportMap[url][condition["action"]] = condition["props"];
                 if (condition['resources_exclude']) {
+                    console.log(condition['resources_exclude']);
                     finalURLExportMap[url][condition["action"]]['resources_exclude'] = condition['resources_exclude'];
                 }
             }
         }
     }
     if(rawData['message'] && rawData['message']['title']){
-        finalURLExportMap["message"] = new Map<string, TPolicyMessage>();
+        console.log("HERE");
+        finalURLExportMap["message"] = new Map<string, any>();
+        console.log("HERE2");
         finalURLExportMap["message"]['sticky']={
             message:rawData['message'],
             resources_exclude:[]
         }
+        console.log("HERE3");
     }
     let resourceGroups: TPolicySummary = {
         policy: finalURLExportMap,
