@@ -1,6 +1,6 @@
 
 export type TPolicyAction = {
-    action: 'log_paste' | 'log_cut_copy' | 'sticky' | 'none' | string
+    action: 'log_paste' | 'log_cut_copy' | 'sticky' | 'none' | 'access' | string
     message?: TPolicyMessage
 }
 

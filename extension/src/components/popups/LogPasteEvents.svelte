@@ -6,8 +6,22 @@
     import jQuery from "jquery";
     import type { TAlertProps } from "../types/AlertPropsTypes";
     import type { TPolicyMessage } from "../helpers/PolicyHelper";
+    import browser from "webextension-polyfill";
 
     let isCopyTextEmitted: boolean = false;
+
+
+    const logEvent = (event:string,content:string) => {
+        let askMessage = {
+            category: "LOG_EVENT",
+            data: { 
+                event:event,
+                content: content,
+            },
+        };
+        browser.runtime.sendMessage(askMessage);
+    };
+
 
     // Define an empty object to suppress navigator.clipboard
 const emptyClipboard = {
@@ -28,6 +42,7 @@ Object.defineProperty(navigator, 'clipboard', {
         if (jQuery(event.target).is("button")) {
             let buttonText = jQuery(event.target).text();
             console.log("buttonText", buttonText);
+            setTimeout(function () {
             if (buttonText.toLowerCase().includes("copy")) {
                 isCopyTextEmitted = true;
                 console.log("Clicked button text:", buttonText);
@@ -39,8 +54,11 @@ Object.defineProperty(navigator, 'clipboard', {
                 document.execCommand("paste");
                 let clipboardData = jQuery("#hidden-input").val();
                 console.log("Clipboard data:", clipboardData);
+                logEvent("C",""+clipboardData);
+
                 hiddenInput.remove();
             }
+        }, 1000);
         }
     });
 
@@ -50,6 +68,7 @@ Object.defineProperty(navigator, 'clipboard', {
                 "paste function",
                 e.originalEvent.clipboardData.getData("text")
             );
+            logEvent("P",""+e.originalEvent.clipboardData.getData("text"));
         } else {
             isCopyTextEmitted = false;
         }

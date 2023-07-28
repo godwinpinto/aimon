@@ -7,8 +7,8 @@
 
     export let props: TPolicyMessage;
 
-    let alertColor="orange";
-    let alertType="warning";
+    let alertColor="red";
+    let alertType="danger";
 
     const mdConvertor = new Showdown.Converter();
 
@@ -35,6 +35,7 @@
 <div
     id="alertExtension"
     class="bg-{alertColor}-100 border-t-4 border-{alertColor}-500 rounded-b text-{alertColor}-900 px-4 py-3 w-full"
+    style="color: #ef4444"
     role="alert"
 >
     <div class="flex">

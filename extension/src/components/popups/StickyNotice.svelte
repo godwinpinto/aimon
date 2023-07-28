@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { duration } from "moment";
     import type { TPolicyMessage } from "../helpers/PolicyHelper";
     import type { TAlertProps } from "../types/AlertPropsTypes";
     import AlertContent from "./AlertContent.svelte";

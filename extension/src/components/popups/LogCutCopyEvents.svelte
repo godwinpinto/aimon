@@ -14,7 +14,7 @@
     const logEvent = (event:string,content:string) => {
         let askMessage = {
             category: "LOG_EVENT",
-            data: {
+            data: { 
                 event:event,
                 content: content,
             },
@@ -27,6 +27,7 @@
         
         var text = window.getSelection().toString();
         console.log("Cut:",text);
+        logEvent("X",text);
 
    //     let copiedText = e.originalEvent.clipboardData.getData("text/plain");
 /*         navigator.clipboard.readText().then((text) => {
@@ -41,6 +42,8 @@
         console.log("Copy:",text); */
         var text = window.getSelection().toString();
         console.log("Copy:",text);
+        logEvent("C",text);
+
 
 /*         navigator.clipboard.readText().then((text) => {
             console.log("Copy:",text);

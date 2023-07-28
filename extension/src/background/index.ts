@@ -40,7 +40,15 @@ browser.tabs.onUpdated.addListener((tabId, changeInfo, tabInfo) => {
         policyActions=[];
         messageStore.set(tabId, policyActions);
     }
+
+    for (let policyAction of policyActions) {
+        if(policyAction.action=='log_access'){
+            apiLogger(url,"I","");
+        }
+    }
 });
+
+let oldContent="";
 
 const processContentScriptsListener = ((request: any, sender, sendResponse): void => {
 
@@ -53,7 +61,12 @@ const processContentScriptsListener = ((request: any, sender, sendResponse): voi
             let domain = (new URL(sender.url));
             stickyCancellationStore.set(domain.hostname,newTime.toDate());
         }else if(category.category === 'LOG_EVENT') {
-             apiLogger(sender.url,category.data.event,category.data.content);
+/*             if(oldContent==category.data.content){
+                console.log('content already logged');
+                return
+            } */
+ //           oldContent=category.data.content;
+            apiLogger(sender.url,category.data.event,category.data.content);
         }
     }
 });
