@@ -1,0 +1,8 @@
+go 1.19
+
+use (
+	./analytics
+	./backend
+	./simulation
+	./content-tagging
+)
