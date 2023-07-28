@@ -1,0 +1,1 @@
+import{O as t}from"./Options-1cdecd47.js";import"./Indicator.svelte_svelte_type_style_lang-cac132dd.js";import"./browser-polyfill-f4250b44.js";const e=document.getElementById("app");function n(){new t({target:e})}document.addEventListener("DOMContentLoaded",n);
