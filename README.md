@@ -20,8 +20,10 @@ Proof that there exists a problem [refer article](https://www.cyberhaven.com/blo
 Consists of below components
 1. **A Browser Extension**: A Browser extension to capture user events based on manifest version 3
 2. **Policy File**: To decide which websites should be excluded from event capturing
-3. **Server API**: To gathering events, connect to ChatGPT (or any selfhosted AI like H2O.ai) and get tags
+3. **Server API**: To gathering events
 4. **TiDB DataStore**: Storing these events and tags which may have heavy ingestion rate and also used for analytics
-5. **Admin Panel**: To view dashboard of tags, events and audit them. You can also view detailed activities.
+5. **Analytics Panel**: To view dashboard of tags, events and audit them. You can also view detailed activities.
+6. **Simulation**: To Fake requests, just for demo purpose
+7. **content-tagging**:  connect to ChatGPT (or any selfhosted AI like H2O.ai) and get tags based on content entered, userwise.
 
 
