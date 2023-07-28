@@ -8,7 +8,7 @@ import type { TMessageCategory } from "src/components/types/MessageCategoryTypes
 import moment, { type Moment } from 'moment';
 import { apiLogger } from "src/components/helpers/ApiLogger";
 
-let configuration = new Map<string, Map<string,TPolicyMessage>>();
+let configuration = new Map<string, Map<string, TPolicyMessage>>();
 
 let resourceGroupMap = new Map<string, any>();
 
@@ -25,30 +25,40 @@ browser.tabs.onRemoved.addListener(cleanUpOnTabClose);
 
 browser.tabs.onUpdated.addListener((tabId, changeInfo, tabInfo) => {
 
-    let url:string;
-    if(changeInfo.status && changeInfo.status==='loading' && changeInfo.url){
-        url=changeInfo.url;
-    }else{
+    let url: string;
+    if (changeInfo.status && changeInfo.status === 'loading' && changeInfo.url) {
+        url = changeInfo.url;
+    } else {
         return;
     }
 
-    let policyActions: Array<TPolicyAction> = policyValidator(url,configuration,stickyCancellationStore,resourceGroupMap);
-    console.log("policyActions",policyActions);
-    if(policyActions.length!=0){
+    let policyActions: Array<TPolicyAction> = policyValidator(url, configuration, stickyCancellationStore, resourceGroupMap);
+    console.log("policyActions", policyActions);
+    if (policyActions.length != 0) {
         messageStore.set(tabId, policyActions);
-    }else{
-        policyActions=[];
+    } else {
+        policyActions = [];
         messageStore.set(tabId, policyActions);
     }
+    setTimeout(function () {
 
-    for (let policyAction of policyActions) {
-        if(policyAction.action=='log_access'){
-            apiLogger(url,"I","");
+        for (let policyAction of policyActions) {
+            if (policyAction.action == 'log_access') {
+                browser.storage.local.get(["user_id"]).then((items) => {
+                    console.log("item", items)
+                    if (items && items.user_id) {
+                        apiLogger(url, "I", "", items.user_id);
+                    }
+                });
+
+            }
         }
-    }
+    }, 500);
+
 });
 
-let oldContent="";
+let oldContent = "";
+
 
 const processContentScriptsListener = ((request: any, sender, sendResponse): void => {
 
@@ -56,17 +66,28 @@ const processContentScriptsListener = ((request: any, sender, sendResponse): voi
         let category = request as TMessageCategory;
         if (category.category === 'REQUEST_RULES') {
             sendResponse({ response: messageStore.get(sender.tab.id) });
-        }else if(category.category === 'STORE_STICKY_CANCELLATION') {
-            const newTime=moment().add(category.data.duration,'seconds');
+        } else if (category.category === 'STORE_STICKY_CANCELLATION') {
+            const newTime = moment().add(category.data.duration, 'seconds');
             let domain = (new URL(sender.url));
-            stickyCancellationStore.set(domain.hostname,newTime.toDate());
-        }else if(category.category === 'LOG_EVENT') {
-/*             if(oldContent==category.data.content){
-                console.log('content already logged');
-                return
-            } */
- //           oldContent=category.data.content;
-            apiLogger(sender.url,category.data.event,category.data.content);
+            stickyCancellationStore.set(domain.hostname, newTime.toDate());
+        } else if (category.category === 'SAVE_USERNAME') {
+            browser.storage.local.set({ "user_id": category.data }).then(() => {
+                console.log("saved")
+            });
+        }
+        else if (category.category === 'LOG_EVENT') {
+            /*             if(oldContent==category.data.content){
+                            console.log('content already logged');
+                            return
+                        } */
+            //           oldContent=category.data.content;
+
+            browser.storage.local.get(["user_id"]).then((items) => {
+                console.log("logging event", items)
+                if (items && items.user_id) {
+                    apiLogger(sender.url, category.data.event, category.data.content, items.user_id);
+                }
+            });
         }
     }
 });
@@ -87,7 +108,7 @@ browser.alarms.onAlarm.addListener((alarm) => {
 });
 
 async function fetchConfigurationFromAPI(url: string): Promise<JSON> {
-    return fetch(url, {cache: "no-store"}).then((response) => {
+    return fetch(url, { cache: "no-store" }).then((response) => {
         if (response.status == 200) {
             const responseJson = response.json();
             return Promise.resolve(responseJson);
@@ -101,14 +122,14 @@ async function fetchConfigurationFromAPI(url: string): Promise<JSON> {
 
 async function loadOrUpdateConfiguration() {
     const internalAPIJsonValue = await fetchConfigurationFromAPI(appConfig.policyConfig.internalUrl);
-    let externalAPIJsonValue={};
-    if(appConfig.policyConfig.internalUrl!==appConfig.policyConfig.externalUrl){
+    let externalAPIJsonValue = {};
+    if (appConfig.policyConfig.internalUrl !== appConfig.policyConfig.externalUrl) {
         externalAPIJsonValue = await fetchConfigurationFromAPI(appConfig.policyConfig.externalUrl);
     }
     const mergeResult = merge.withOptions(
-        { mergeArrays: true },internalAPIJsonValue, externalAPIJsonValue);
+        { mergeArrays: true }, internalAPIJsonValue, externalAPIJsonValue);
 
-    const tPolicySummary=policyParser(mergeResult);
+    const tPolicySummary = policyParser(mergeResult);
     if (!isEmptyObject(tPolicySummary)) {
         saveConfigToStorage(tPolicySummary);
     } else {
@@ -118,9 +139,9 @@ async function loadOrUpdateConfiguration() {
 
 async function loadConfigFromStorage(): Promise<void> {
     return browser.storage.local.get(["config"]).then((result) => {
-        const policyConfig=result.key as TPolicySummary;
+        const policyConfig = result.key as TPolicySummary;
         configuration = policyConfig.policy;
-        resourceGroupMap=policyConfig.resourceGroups;
+        resourceGroupMap = policyConfig.resourceGroups;
         return Promise.resolve();
     });
 }
@@ -129,7 +150,7 @@ async function saveConfigToStorage(value: TPolicySummary) {
     if (!isEmptyObject(value)) {
         browser.storage.local.set({ "config": value }).then(() => {
             configuration = value.policy;
-            resourceGroupMap=value.resourceGroups;
+            resourceGroupMap = value.resourceGroups;
         });
     }
 

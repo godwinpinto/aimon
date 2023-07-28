@@ -1,13 +1,16 @@
+import { storage } from "../../storage";
+
 const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-export const apiLogger =async (url:string,event:string,content:string) => {
-    console.log('apiLogger',url,event, content);
+export const apiLogger =async (url:string,event:string,content:string,username:string) => {
+    console.log('apiLogger',url,event, content,username);
+
     const postData = {
         content: content,
         url: url,
         action: event,
         timezone: timezone,
-        user_id: 'godwin.pinto'
+        user_id: username
       };
 
       fetch('https://aimon-api.vercel.app/api/audit', {

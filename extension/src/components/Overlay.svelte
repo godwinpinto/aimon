@@ -32,6 +32,7 @@
             if (!message.response) {
                 return;
             }
+            console.log("success")
             console.log(message.response);
             actors = message.response;
         }
@@ -41,9 +42,12 @@
         };
 
         function handleError(error) {
+            console.log("error",error)
+
         }
 
         function getMessageDetails() {
+            console.log("start transaction")
             const sending = browser.runtime.sendMessage(askMessage);
             sending.then(handleResponse, handleError);
         }
