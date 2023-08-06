@@ -24,7 +24,7 @@ func TopCriticalTags(w http.ResponseWriter, request *http.Request) {
 	var results []TopCriticalTagsStruct
 	result := gormDB.Raw(`SELECT COUNT(aust.TAG_NAME) COUNT_TAGS, aust.TAG_NAME  
 	FROM AUDIT_USER_SEARCH_TAGS aust, AUDIT_TAGS_MASTER atm 
-	WHERE aust.CREATED_DT >=DATE_SUB(NOW(), INTERVAL 1000 HOUR)
+	WHERE aust.CREATED_DT >=DATE_SUB(NOW(), INTERVAL 24 HOUR)
 	AND aust.TAG_NAME =atm.TAG_NAME AND atm.TAG_TYPE ='C'
 	GROUP BY TAG_NAME 
 	ORDER BY 1 DESC 

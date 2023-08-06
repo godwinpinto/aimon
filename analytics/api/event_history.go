@@ -31,7 +31,7 @@ func EventHistory(w http.ResponseWriter, request *http.Request) {
 	FROM AUDIT_REQUEST_MASTER arm 
 	WHERE arm.CREATED_DATETIME >=DATE_SUB(NOW(), INTERVAL 1000 HOUR)
 	ORDER BY CREATED_DATETIME DESC 
-	LIMIT 100
+	LIMIT 200
 	`).Scan(&results)
 
 	if result.Error != nil {

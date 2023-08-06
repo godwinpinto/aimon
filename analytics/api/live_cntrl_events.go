@@ -27,7 +27,7 @@ func LiveCntrlEvents(w http.ResponseWriter, request *http.Request) {
 	var results []LiveCntrlEventsStruct
 	result := gormDB.Raw(`SELECT USER_ACTION, count(USER_ACTION) as COUNT_ACTION, NOW() AS CURRENT_SERVER_TIME 
 	FROM AUDIT_REQUEST_MASTER
-	WHERE CREATED_DATETIME >=DATE_SUB(NOW(), INTERVAL 10000 MINUTE)
+	WHERE CREATED_DATETIME >=DATE_SUB(NOW(), INTERVAL 60 SECOND)
 	group by USER_ACTION
 	`).Scan(&results)
 

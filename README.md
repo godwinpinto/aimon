@@ -26,4 +26,8 @@ Consists of below components
 6. **Simulation**: To Fake requests, just for demo purpose
 7. **content-tagging**:  connect to ChatGPT (or any selfhosted AI like H2O.ai) and get tags based on content entered, userwise.
 
-
+### Installation
+1. Install the extension by downloading the file from directory extension/install/browser.zip and go to your chrome extension and use load packaged.
+2. Go to extension on top right in your browser and enter a username to indentify requests
+3. Go to chat.openai.com and copy paste some content there
+4. Visit: https://analytics-godwinpinto.vercel.app to view the analytics

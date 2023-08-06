@@ -24,7 +24,7 @@ func TopUserActivity(w http.ResponseWriter, request *http.Request) {
 	var results []TopUserActivityStruct
 	result := gormDB.Raw(`SELECT COUNT(USER_ID) COUNT_ACTIVITY, USER_ID
 	FROM AUDIT_REQUEST_MASTER
-	WHERE CREATED_DATETIME >=DATE_SUB(NOW(), INTERVAL 1000 HOUR)
+	WHERE CREATED_DATETIME >=DATE_SUB(NOW(), INTERVAL 24 HOUR)
 	GROUP BY USER_ID  
 	ORDER BY 1 DESC 
 	LIMIT 10

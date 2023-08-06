@@ -30,7 +30,7 @@ func LiveSensitiveTransactions(w http.ResponseWriter, request *http.Request) {
 	result := gormDB.Raw(`SELECT arm.ARM_ROW_ID, arm.USER_ID, arm.USER_ACTION, arm.CREATED_DATETIME, arm.URL_DOMAIN 
 	FROM AUDIT_REQUEST_MASTER arm, AUDIT_BLACKLIST_DOMAIN_MASTER abdm 
 	WHERE arm.URL_DOMAIN =abdm.DOMAIN_NAME 
-	AND arm.CREATED_DATETIME >=DATE_SUB(NOW(), INTERVAL 10000 MINUTE)
+	AND arm.CREATED_DATETIME >=DATE_SUB(NOW(), INTERVAL 10 SECOND)
 	`).Scan(&results)
 
 	if result.Error != nil {
